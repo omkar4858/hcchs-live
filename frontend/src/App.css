@@ -1,0 +1,41 @@
+.App {
+  min-height: 100vh;
+  background-color: #faf7f2;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #faf7f2;
+  color: #1a1a1a;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #faf7f2;
+}
+::-webkit-scrollbar-thumb {
+  background: #5b0e5b;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7a1a7a;
+}
+
+/* Smooth fade-in for sections */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+section {
+  animation: fadeInUp 0.5s ease-out;
+}
