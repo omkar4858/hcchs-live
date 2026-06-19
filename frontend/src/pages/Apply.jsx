@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { Send, CheckCircle2, Mail, GraduationCap } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -14,6 +15,8 @@ import {
 } from "../components/ui/select";
 import { useToast } from "../hooks/use-toast";
 import { courses, collegeInfo } from "../data/mock";
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export default function Apply() {
   const location = useLocation();
@@ -43,15 +46,20 @@ export default function Apply() {
       return;
     }
     setLoading(true);
-    // Mock submission - simulate latency
-    await new Promise((r) => setTimeout(r, 900));
-    // Persist in local storage so it feels real in mock mode
-    const apps = JSON.parse(localStorage.getItem("applications") || "[]");
-    apps.push({ ...form, submittedAt: new Date().toISOString() });
-    localStorage.setItem("applications", JSON.stringify(apps));
-    setLoading(false);
-    setSubmitted(true);
-    toast({ title: "Application Submitted", description: "We've received your application. Our admissions team will reach out shortly." });
+    try {
+      const res = await axios.post(`${API}/applications`, form, { timeout: 20000 });
+      setLoading(false);
+      if (res.data?.success) {
+        setSubmitted(true);
+        toast({ title: "Application Submitted", description: res.data.message || "We've received your application." });
+      } else {
+        toast({ title: "Submission Failed", description: "Please try again.", variant: "destructive" });
+      }
+    } catch (err) {
+      setLoading(false);
+      const detail = err?.response?.data?.detail || "Could not submit. Please try again or call us directly.";
+      toast({ title: "Submission Failed", description: detail, variant: "destructive" });
+    }
   };
 
   if (submitted) {

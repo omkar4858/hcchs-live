@@ -101,3 +101,91 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+user_problem_statement: |
+  Clone of hcnpc.in for "Humanity Care College of Higher Studies" with courses BBA, BCA, BJMC, BLIS,
+  Diploma in Oriental Librarianship, Accountancy for Panchayti Raj Institutions, Functional Arabic,
+  Functional Persian. Apply Now form must send email notification with applicant details to
+  educafirst1@gmail.com via Gmail SMTP (humanitycaregc@gmail.com).
+
+backend:
+  - task: "POST /api/applications endpoint - saves to MongoDB and sends Gmail SMTP email to educafirst1@gmail.com"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Built POST /api/applications. Persists application to db.applications, then sends an HTML email via Gmail SMTP (smtp.gmail.com:587, STARTTLS) using credentials in backend/.env (SMTP_USER, SMTP_PASSWORD app password). Email recipient = APPLICATION_RECIPIENT (educafirst1@gmail.com). Email is sent via FastAPI BackgroundTasks. Endpoint must validate required fields (fullName, email, phone, course), return {success, id, message}."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED WORKING. Tested POST /api/applications with valid payload (fullName: 'QA Test Applicant', email: 'qa-test@example.com', phone: '9876543210', course: 'BBA'). Endpoint returned 200 with {success: true, id: 'ceac6c6e-a17d-495e-b7c4-d3d3842231f8', message: '...'}. Application saved to MongoDB. After 8 seconds, emailSent flag confirmed TRUE - Gmail SMTP working correctly. Backend logs show: 'Application email sent to educafirst1@gmail.com for QA Test Applicant'. Validation tests passed: missing 'course' field returns 422, invalid email 'not-an-email' returns 422. All requirements met."
+
+  - task: "GET /api/applications - lists submitted applications"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Returns recent applications from MongoDB, _id stripped, sorted by submittedAt desc."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED WORKING. GET /api/applications returns list of applications sorted by submittedAt descending. Test application (ID: ceac6c6e-a17d-495e-b7c4-d3d3842231f8) found in response. MongoDB _id field correctly stripped from response. emailSent flag present and accurate. All fields returned correctly."
+
+frontend:
+  - task: "Apply Now form submits to /api/applications"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/Apply.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Form posts to REACT_APP_BACKEND_URL + /api/applications via axios; shows success card on submit; toast on error."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 2
+
+test_plan:
+  current_focus:
+    - "POST /api/applications endpoint - saves to MongoDB and sends Gmail SMTP email to educafirst1@gmail.com"
+    - "GET /api/applications - lists submitted applications"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+      message: |
+        Please test the new application submission endpoint. Critical: verify that a POST to /api/applications
+        with valid payload (fullName, email, phone, course) returns success and that the application appears in
+        GET /api/applications. Also confirm that emailSent flag becomes true (background task) after a few
+        seconds - this confirms Gmail SMTP succeeded. Use the test email "qa-test@example.com" so the recipient
+        (educafirst1@gmail.com) can identify test entries. Validate that missing required fields return 422.
+    - agent: "testing"
+      message: |
+        ✅ ALL BACKEND TESTS PASSED (8/8). Comprehensive testing completed:
+        
+        1. ✅ GET /api/ - Returns {"message": "Humanity Care College API"}
+        2. ✅ POST /api/status - Creates status check with UUID
+        3. ✅ GET /api/status - Lists status checks
+        4. ✅ POST /api/applications validation - Missing 'course' returns 422
+        5. ✅ POST /api/applications validation - Invalid email returns 422
+        6. ✅ POST /api/applications - Valid submission returns {success: true, id: UUID, message}
+        7. ✅ GET /api/applications - Lists applications, _id stripped, sorted correctly
+        8. ✅ Gmail SMTP verification - emailSent flag TRUE after 8 seconds
+        
+        CRITICAL VERIFICATION: Gmail SMTP is working correctly. Backend logs confirm:
+        "Application email sent to educafirst1@gmail.com for QA Test Applicant"
+        
+        All endpoints functioning as expected. No errors in backend logs. Ready for production.
