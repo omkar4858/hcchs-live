@@ -30,8 +30,8 @@ export default function Contact() {
               { icon: Phone, title: "Phone", body: `${collegeInfo.phone1}  |  ${collegeInfo.phone2}`, link: `tel:${collegeInfo.phone1}`, linkText: "Call now" },
               { icon: Mail, title: "Email", body: collegeInfo.displayEmail, link: `mailto:${collegeInfo.displayEmail}`, linkText: "Send email" },
               { icon: Clock, title: "Office Hours", body: `${collegeInfo.officeHours.weekdays}\n${collegeInfo.officeHours.sunday}` }
-            ].map((c, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex gap-5">
+            ].map((c) => (
+              <div key={c.title} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex gap-5">
                 <div className="w-14 h-14 rounded-xl bg-[#f5c518]/20 flex items-center justify-center flex-shrink-0">
                   <c.icon className="w-7 h-7 text-[#5b0e5b]" />
                 </div>

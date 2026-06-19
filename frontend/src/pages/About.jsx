@@ -59,8 +59,8 @@ export default function About() {
               { icon: Heart, title: "Integrity", desc: "Honesty, transparency and ethical practice in everything we do." },
               { icon: Users, title: "Inclusivity", desc: "A welcoming community valuing every student's voice." },
               { icon: GraduationCap, title: "Innovation", desc: "Embracing modern pedagogy while honoring tradition." }
-            ].map((v, i) => (
-              <div key={i} className="text-center bg-[#faf7f2] rounded-2xl p-7 border border-gray-100 hover:shadow-md transition-shadow">
+            ].map((v) => (
+              <div key={v.title} className="text-center bg-[#faf7f2] rounded-2xl p-7 border border-gray-100 hover:shadow-md transition-shadow">
                 <div className="w-14 h-14 mx-auto rounded-xl bg-[#f5c518]/20 flex items-center justify-center mb-4">
                   <v.icon className="w-7 h-7 text-[#5b0e5b]" />
                 </div>

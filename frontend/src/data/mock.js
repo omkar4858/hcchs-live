@@ -28,26 +28,32 @@ export const heroImage = "https://images.unsplash.com/photo-1741637335289-c99652
 
 export const galleryImages = [
   {
+    id: "g-classroom",
     url: "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2OTV8MHwxfHNlYXJjaHwyfHx1bml2ZXJzaXR5JTIwY2xhc3Nyb29tfGVufDB8fHx8MTc4MTc4NjM1Mnww&ixlib=rb-4.1.0&q=85",
     caption: "Modern Classrooms"
   },
   {
+    id: "g-graduation",
     url: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHwzfHxncmFkdWF0aW9uJTIwY2VyZW1vbnl8ZW58MHx8fHwxNzgxNjExODI1fDA&ixlib=rb-4.1.0&q=85",
     caption: "Graduation Day"
   },
   {
+    id: "g-lab",
     url: "https://images.pexels.com/photos/5530484/pexels-photo-5530484.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
     caption: "Computer Lab"
   },
   {
+    id: "g-learning",
     url: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2OTV8MHwxfHNlYXJjaHwzfHx1bml2ZXJzaXR5JTIwY2xhc3Nyb29tfGVufDB8fHx8MTc4MTc4NjM1Mnww&ixlib=rb-4.1.0&q=85",
     caption: "Interactive Learning"
   },
   {
+    id: "g-campus",
     url: "https://images.unsplash.com/photo-1741637335289-c99652d3155f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHw0fHxjb2xsZWdlJTIwc3R1ZGVudHMlMjBjYW1wdXN8ZW58MHx8fHwxNzgxNzg2MzUzfDA&ixlib=rb-4.1.0&q=85",
     caption: "Campus Life"
   },
   {
+    id: "g-tech",
     url: "https://images.pexels.com/photos/5530484/pexels-photo-5530484.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
     caption: "Technology Labs"
   }

@@ -22,7 +22,7 @@ export default function Gallery() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {galleryImages.map((img, i) => (
-              <div key={i} className="group relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-shadow">
+              <div key={img.id} className="group relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-shadow">
                 <div className="aspect-[4/3] overflow-hidden">
                   <img
                     src={img.url}

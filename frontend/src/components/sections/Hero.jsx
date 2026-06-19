@@ -24,7 +24,7 @@ export default function Hero() {
               { icon: ShieldCheck, text: collegeInfo.affiliations[1] },
               { icon: BadgeCheck, text: collegeInfo.affiliations[2] }
             ].map((b, i) => (
-              <div key={i} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3a0a3a]/70 border border-white/10 text-white text-sm backdrop-blur-sm">
+              <div key={b.text} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3a0a3a]/70 border border-white/10 text-white text-sm backdrop-blur-sm">
                 <b.icon className="w-4 h-4 text-[#f5c518]" />
                 <span>{b.text}</span>
               </div>

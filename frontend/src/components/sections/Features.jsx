@@ -25,7 +25,7 @@ export default function Features() {
             const Icon = icons[i];
             return (
               <div
-                key={i}
+                key={f.title}
                 className="group bg-white rounded-2xl p-7 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="w-14 h-14 rounded-xl bg-[#f5c518]/15 flex items-center justify-center mb-5 group-hover:bg-[#f5c518]/25 transition-colors">
