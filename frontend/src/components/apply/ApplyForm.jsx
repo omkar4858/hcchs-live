@@ -1,5 +1,6 @@
 import React from "react";
-import { Send, Mail, GraduationCap } from "lucide-react";
+import { Send, Mail } from "lucide-react";
+import Logo from "../Logo";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -17,9 +18,7 @@ export default function ApplyForm({ form, onChange, onSubmit, loading }) {
   return (
     <form onSubmit={onSubmit} className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-gray-100 space-y-5">
       <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
-        <div className="w-12 h-12 rounded-xl bg-[#5b0e5b] flex items-center justify-center">
-          <GraduationCap className="w-6 h-6 text-[#f5c518]" />
-        </div>
+        <Logo className="w-12 h-12" />
         <div>
           <h2 className="text-2xl font-bold text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', serif" }}>
             Application Form

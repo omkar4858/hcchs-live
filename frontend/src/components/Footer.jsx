@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { GraduationCap, Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import Logo from "./Logo";
 import { collegeInfo } from "../data/mock";
 
 export default function Footer() {
@@ -11,9 +12,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#5b0e5b] flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-[#f5c518]" />
-              </div>
+              <Logo className="w-12 h-12" />
               <div>
                 <div className="text-white font-bold text-lg" style={{ fontFamily: "'Playfair Display', serif" }}>
                   {collegeInfo.shortName}

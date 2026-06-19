@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Phone, Menu, X, GraduationCap } from "lucide-react";
+import { Phone, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
+import Logo from "./Logo";
 import { collegeInfo } from "../data/mock";
 
 const navItems = [
@@ -23,9 +24,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#5b0e5b] to-[#7a1a7a] flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-              <GraduationCap className="w-6 h-6 text-[#f5c518]" />
-            </div>
+            <Logo className="w-12 h-12" />
             <div className="leading-tight">
               <div className="font-bold text-[#1a1a1a] text-lg" style={{ fontFamily: "'Playfair Display', serif" }}>
                 {collegeInfo.shortName}

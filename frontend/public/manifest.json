@@ -1,0 +1,21 @@
+{
+  "short_name": "Humanity Care",
+  "name": "Humanity Care College of Higher Studies",
+  "description": "Premier higher education college in Muzaffarpur, Bihar offering BBA, BCA, BJMC, BLIS and more.",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "type": "image/png",
+      "sizes": "64x64 192x192 512x512"
+    },
+    {
+      "src": "logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#5b0e5b",
+  "background_color": "#faf7f2"
+}
