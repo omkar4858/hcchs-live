@@ -80,6 +80,9 @@ COURSE_NAMES = {
     "APRI": "Accountancy for Panchayti Raj Institutions",
     "FA": "Functional Arabic",
     "FP": "Functional Persian",
+    "ANM": "Auxiliary Nursing Midwifery",
+    "GNM": "General Nursing and Midwifery",
+    "BSCN": "B.Sc (Nursing)",
 }
 
 

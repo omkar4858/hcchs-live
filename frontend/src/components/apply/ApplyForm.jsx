@@ -14,6 +14,18 @@ import {
 } from "../ui/select";
 import { courses } from "../../data/mock";
 
+// Extra options shown ONLY in the application form (sister college programs).
+const EXTRA_APPLY_COURSES = [
+  { code: "ANM", name: "Auxiliary Nursing Midwifery" },
+  { code: "GNM", name: "General Nursing and Midwifery" },
+  { code: "BSCN", name: "B.Sc (Nursing)" }
+];
+
+const APPLY_COURSE_OPTIONS = [
+  ...courses.map((c) => ({ code: c.code, name: c.name })),
+  ...EXTRA_APPLY_COURSES
+];
+
 export default function ApplyForm({ form, onChange, onSubmit, loading }) {
   return (
     <form onSubmit={onSubmit} className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-gray-100 space-y-5">
@@ -64,7 +76,7 @@ export default function ApplyForm({ form, onChange, onSubmit, loading }) {
               <SelectValue placeholder="Select course" />
             </SelectTrigger>
             <SelectContent>
-              {courses.map((c) => (
+              {APPLY_COURSE_OPTIONS.map((c) => (
                 <SelectItem key={c.code} value={c.code}>
                   {c.code} - {c.name}
                 </SelectItem>
