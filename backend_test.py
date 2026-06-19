@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Script for Humanity Care College
-Tests all backend endpoints at REACT_APP_BACKEND_URL/api
+Backend API Testing Script for Humanity Care College (Database-Free Version)
+Tests the refactored backend that uses only Gmail SMTP (no MongoDB)
 """
 
 import requests
@@ -20,7 +20,7 @@ def get_backend_url():
 BASE_URL = get_backend_url()
 API_BASE = f"{BASE_URL}/api"
 
-print(f"Testing backend at: {API_BASE}")
+print(f"Testing DATABASE-FREE backend at: {API_BASE}")
 print("=" * 80)
 
 # Test results tracking
@@ -64,173 +64,175 @@ try:
 except Exception as e:
     log_fail("GET /api/", f"Exception: {str(e)}")
 
-# Test 2: POST /api/status - Create status check
-print("\n[Test 2] POST /api/status - Create status check")
+# Test 2: GET /api/health - Health check
+print("\n[Test 2] GET /api/health - Health check")
 print("-" * 80)
 try:
-    payload = {"client_name": "QA Test Client"}
-    response = requests.post(f"{API_BASE}/status", json=payload, timeout=10)
+    response = requests.get(f"{API_BASE}/health", timeout=10)
     if response.status_code == 200:
         data = response.json()
-        if "id" in data and "client_name" in data and data["client_name"] == "QA Test Client":
-            log_pass("POST /api/status", f"Created status check with ID: {data['id']}")
+        if data.get("status") == "ok" and "smtp_configured" in data:
+            smtp_status = data.get("smtp_configured")
+            if smtp_status is True:
+                log_pass("GET /api/health", f"Response: {data} - SMTP is configured")
+            else:
+                log_fail("GET /api/health", f"SMTP not configured: {data}")
         else:
-            log_fail("POST /api/status", f"Unexpected response: {data}")
+            log_fail("GET /api/health", f"Unexpected response structure: {data}")
     else:
-        log_fail("POST /api/status", f"Status code: {response.status_code}, Body: {response.text}")
+        log_fail("GET /api/health", f"Status code: {response.status_code}, Body: {response.text}")
 except Exception as e:
-    log_fail("POST /api/status", f"Exception: {str(e)}")
+    log_fail("GET /api/health", f"Exception: {str(e)}")
 
-# Test 3: GET /api/status - List status checks
-print("\n[Test 3] GET /api/status - List status checks")
-print("-" * 80)
-try:
-    response = requests.get(f"{API_BASE}/status", timeout=10)
-    if response.status_code == 200:
-        data = response.json()
-        if isinstance(data, list):
-            log_pass("GET /api/status", f"Retrieved {len(data)} status checks")
-        else:
-            log_fail("GET /api/status", f"Expected list, got: {type(data)}")
-    else:
-        log_fail("GET /api/status", f"Status code: {response.status_code}, Body: {response.text}")
-except Exception as e:
-    log_fail("GET /api/status", f"Exception: {str(e)}")
-
-# Test 4: POST /api/applications - Validation (missing required field)
-print("\n[Test 4] POST /api/applications - Validation (missing 'course')")
+# Test 3: POST /api/applications - Validation (missing required field 'course')
+print("\n[Test 3] POST /api/applications - Validation (missing 'course')")
 print("-" * 80)
 try:
     payload = {
-        "fullName": "QA Test Applicant",
-        "email": "qa-test@example.com",
+        "fullName": "QA Test Applicant - Missing Course",
+        "email": "qa-validation-test@example.com",
         "phone": "9876543210"
         # Missing 'course' - should fail validation
     }
     response = requests.post(f"{API_BASE}/applications", json=payload, timeout=10)
     if response.status_code == 422:
-        log_pass("POST /api/applications validation (missing field)", "Correctly returned 422 for missing 'course'")
+        log_pass("POST /api/applications validation (missing 'course')", "Correctly returned 422")
     else:
-        log_fail("POST /api/applications validation (missing field)", 
+        log_fail("POST /api/applications validation (missing 'course')", 
                 f"Expected 422, got {response.status_code}. Body: {response.text}")
 except Exception as e:
-    log_fail("POST /api/applications validation (missing field)", f"Exception: {str(e)}")
+    log_fail("POST /api/applications validation (missing 'course')", f"Exception: {str(e)}")
 
-# Test 5: POST /api/applications - Validation (invalid email)
-print("\n[Test 5] POST /api/applications - Validation (invalid email)")
+# Test 4: POST /api/applications - Validation (invalid email)
+print("\n[Test 4] POST /api/applications - Validation (invalid email)")
 print("-" * 80)
 try:
     payload = {
-        "fullName": "QA Test Applicant",
+        "fullName": "QA Test Applicant - Invalid Email",
         "email": "not-an-email",
         "phone": "9876543210",
-        "course": "BBA"
+        "course": "BCA"
     }
     response = requests.post(f"{API_BASE}/applications", json=payload, timeout=10)
     if response.status_code == 422:
-        log_pass("POST /api/applications validation (invalid email)", "Correctly returned 422 for invalid email")
+        log_pass("POST /api/applications validation (invalid email)", "Correctly returned 422")
     else:
         log_fail("POST /api/applications validation (invalid email)", 
                 f"Expected 422, got {response.status_code}. Body: {response.text}")
 except Exception as e:
     log_fail("POST /api/applications validation (invalid email)", f"Exception: {str(e)}")
 
-# Test 6: POST /api/applications - Valid submission
-print("\n[Test 6] POST /api/applications - Valid submission")
+# Test 5: POST /api/applications - Valid submission
+print("\n[Test 5] POST /api/applications - Valid submission (Database-Free)")
 print("-" * 80)
 application_id = None
+start_time = time.time()
 try:
     payload = {
-        "fullName": "QA Test Applicant",
-        "email": "qa-test@example.com",
-        "phone": "9876543210",
-        "course": "BBA",
-        "dob": "2000-01-15",
-        "gender": "Male",
-        "qualification": "12th Pass",
-        "address": "123 Test Street, Test City",
-        "message": "This is a test application for QA purposes"
+        "fullName": "QA Test Applicant - No DB",
+        "email": "qa-nodb-test@example.com",
+        "phone": "9999999999",
+        "course": "BCA",
+        "dob": "2002-05-10",
+        "gender": "male",
+        "qualification": "10+2 PCM",
+        "address": "Test Address, Muzaffarpur",
+        "message": "Testing the database-free version."
     }
     response = requests.post(f"{API_BASE}/applications", json=payload, timeout=10)
+    response_time = time.time() - start_time
+    
     if response.status_code == 200:
         data = response.json()
         if data.get("success") and "id" in data and "message" in data:
             application_id = data["id"]
-            log_pass("POST /api/applications (valid)", 
-                    f"Application submitted successfully. ID: {application_id}")
-        else:
-            log_fail("POST /api/applications (valid)", f"Unexpected response structure: {data}")
-    else:
-        log_fail("POST /api/applications (valid)", 
-                f"Status code: {response.status_code}, Body: {response.text}")
-except Exception as e:
-    log_fail("POST /api/applications (valid)", f"Exception: {str(e)}")
-
-# Test 7: GET /api/applications - List applications (immediate check)
-print("\n[Test 7] GET /api/applications - List applications (immediate)")
-print("-" * 80)
-try:
-    response = requests.get(f"{API_BASE}/applications", timeout=10)
-    if response.status_code == 200:
-        data = response.json()
-        if isinstance(data, list):
-            # Find our test application
-            test_app = None
-            if application_id:
-                test_app = next((app for app in data if app.get("id") == application_id), None)
+            log_pass("POST /api/applications (valid submission)", 
+                    f"Application submitted successfully. ID: {application_id}, Response time: {response_time:.2f}s")
             
-            if test_app:
-                log_pass("GET /api/applications (immediate)", 
-                        f"Found test application. emailSent: {test_app.get('emailSent', 'N/A')}")
-                # Check that _id is not present
-                if "_id" in test_app:
-                    log_warning("GET /api/applications", "MongoDB _id field is present (should be stripped)")
+            # Check response time (should be under 2s since email is in BackgroundTasks)
+            if response_time < 2.0:
+                log_pass("POST /api/applications (response time)", 
+                        f"Response time {response_time:.2f}s < 2s (email in background)")
             else:
-                log_warning("GET /api/applications (immediate)", 
-                           f"Test application not found yet (ID: {application_id})")
+                log_warning("POST /api/applications (response time)", 
+                           f"Response time {response_time:.2f}s >= 2s (may not be using BackgroundTasks)")
         else:
-            log_fail("GET /api/applications (immediate)", f"Expected list, got: {type(data)}")
+            log_fail("POST /api/applications (valid submission)", f"Unexpected response structure: {data}")
     else:
-        log_fail("GET /api/applications (immediate)", 
+        log_fail("POST /api/applications (valid submission)", 
                 f"Status code: {response.status_code}, Body: {response.text}")
 except Exception as e:
-    log_fail("GET /api/applications (immediate)", f"Exception: {str(e)}")
+    log_fail("POST /api/applications (valid submission)", f"Exception: {str(e)}")
 
-# Test 8: Wait and verify emailSent flag
-print("\n[Test 8] Waiting 8 seconds for background email task to complete...")
+# Test 6: Wait and check backend logs for SMTP confirmation
+print("\n[Test 6] Waiting 6 seconds for background email task to complete...")
 print("-" * 80)
 if application_id:
-    time.sleep(8)
+    time.sleep(6)
     
-    print("Checking emailSent flag...")
+    print("Checking backend logs for SMTP confirmation...")
+    import subprocess
     try:
-        response = requests.get(f"{API_BASE}/applications", timeout=10)
-        if response.status_code == 200:
-            data = response.json()
-            test_app = next((app for app in data if app.get("id") == application_id), None)
-            
-            if test_app:
-                email_sent = test_app.get("emailSent", False)
-                if email_sent is True:
-                    log_pass("Email SMTP verification", 
-                            "emailSent flag is TRUE - Gmail SMTP working correctly!")
-                else:
-                    log_fail("Email SMTP verification", 
-                            f"emailSent flag is {email_sent} - Gmail SMTP may have failed. Check backend logs.")
-                    print("\n   📋 To check backend logs, run:")
-                    print("   tail -n 100 /var/log/supervisor/backend.err.log")
-            else:
-                log_fail("Email SMTP verification", f"Application {application_id} not found")
+        # Check backend error logs for email confirmation
+        result = subprocess.run(
+            ["tail", "-n", "50", "/var/log/supervisor/backend.err.log"],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        
+        log_content = result.stdout
+        
+        # Look for success message
+        success_pattern = f"Application email sent to educafirst1@gmail.com for QA Test Applicant - No DB"
+        failure_pattern = "Failed to send application email"
+        
+        if success_pattern in log_content:
+            log_pass("SMTP Email Verification", 
+                    "✅ Found log: 'Application email sent to educafirst1@gmail.com for QA Test Applicant - No DB'")
+        elif failure_pattern in log_content:
+            log_fail("SMTP Email Verification", 
+                    "❌ Found 'Failed to send application email' in logs. Check exception details.")
+            print("\n   📋 Recent backend logs:")
+            print("   " + "\n   ".join(log_content.split("\n")[-20:]))
         else:
-            log_fail("Email SMTP verification", f"Failed to fetch applications: {response.status_code}")
+            log_warning("SMTP Email Verification", 
+                       "Could not find email confirmation in logs. Email may still be processing.")
+            print("\n   📋 Recent backend logs:")
+            print("   " + "\n   ".join(log_content.split("\n")[-20:]))
+            
     except Exception as e:
-        log_fail("Email SMTP verification", f"Exception: {str(e)}")
+        log_fail("SMTP Email Verification", f"Failed to check logs: {str(e)}")
 else:
-    log_warning("Email SMTP verification", "Skipped - no application ID from previous test")
+    log_warning("SMTP Email Verification", "Skipped - no application ID from previous test")
+
+# Test 7: Verify no MongoDB dependency
+print("\n[Test 7] Verify no MongoDB dependency")
+print("-" * 80)
+try:
+    # Check if backend code imports motor or pymongo
+    with open('/app/backend/server.py', 'r') as f:
+        backend_code = f.read()
+    
+    if 'motor' in backend_code or 'pymongo' in backend_code:
+        log_fail("No MongoDB dependency", "Found 'motor' or 'pymongo' imports in backend code")
+    else:
+        log_pass("No MongoDB dependency", "Backend code does not import motor or pymongo")
+        
+    # Check if MongoDB-related endpoints exist
+    if '/api/applications' in backend_code and 'GET' in backend_code:
+        # Check if there's a GET handler for /api/applications
+        if '@api_router.get("/applications")' in backend_code:
+            log_fail("No MongoDB dependency", "Found GET /api/applications endpoint (should not exist in DB-free version)")
+        else:
+            log_pass("No MongoDB dependency", "No GET /api/applications endpoint found")
+    
+except Exception as e:
+    log_fail("No MongoDB dependency", f"Exception: {str(e)}")
 
 # Summary
 print("\n" + "=" * 80)
-print("TEST SUMMARY")
+print("TEST SUMMARY - DATABASE-FREE BACKEND")
 print("=" * 80)
 print(f"✅ Passed: {len(test_results['passed'])}")
 for test in test_results['passed']:

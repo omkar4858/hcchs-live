@@ -108,7 +108,31 @@ user_problem_statement: |
   educafirst1@gmail.com via Gmail SMTP (humanitycaregc@gmail.com).
 
 backend:
-  - task: "POST /api/applications endpoint - saves to MongoDB and sends Gmail SMTP email to educafirst1@gmail.com"
+  - task: "GET /api/ - Root endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED WORKING. GET /api/ returns {message: 'Humanity Care College API'}. Response time: 0.13s. No issues."
+
+  - task: "GET /api/health - Health check endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED WORKING. GET /api/health returns {status: 'ok', smtp_configured: true}. SMTP credentials properly configured in backend/.env. No issues."
+
+  - task: "POST /api/applications endpoint - DATABASE-FREE version (only sends Gmail SMTP email, no MongoDB)"
     implemented: true
     working: true
     file: "/app/backend/server.py"
@@ -122,10 +146,13 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ VERIFIED WORKING. Tested POST /api/applications with valid payload (fullName: 'QA Test Applicant', email: 'qa-test@example.com', phone: '9876543210', course: 'BBA'). Endpoint returned 200 with {success: true, id: 'ceac6c6e-a17d-495e-b7c4-d3d3842231f8', message: '...'}. Application saved to MongoDB. After 8 seconds, emailSent flag confirmed TRUE - Gmail SMTP working correctly. Backend logs show: 'Application email sent to educafirst1@gmail.com for QA Test Applicant'. Validation tests passed: missing 'course' field returns 422, invalid email 'not-an-email' returns 422. All requirements met."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED WORKING (DATABASE-FREE REFACTOR). Backend completely refactored to remove MongoDB. Tested POST /api/applications with payload (fullName: 'QA Test Applicant - No DB', email: 'qa-nodb-test@example.com', phone: '9999999999', course: 'BCA'). Endpoint returned 200 with {success: true, id: '25a786e9-79ff-48dc-bb22-55a24eae90c7', message: '...'}. Response time: 0.13s (< 2s, BackgroundTasks working). After 6 seconds, backend logs confirm: 'Application email sent to educafirst1@gmail.com for QA Test Applicant - No DB'. Gmail SMTP working correctly. Validation tests passed: missing 'course' returns 422, invalid email returns 422. NO MongoDB imports (motor/pymongo) found in code. Backend is fully database-free."
 
   - task: "GET /api/applications - lists submitted applications"
-    implemented: true
-    working: true
+    implemented: false
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
@@ -137,6 +164,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ VERIFIED WORKING. GET /api/applications returns list of applications sorted by submittedAt descending. Test application (ID: ceac6c6e-a17d-495e-b7c4-d3d3842231f8) found in response. MongoDB _id field correctly stripped from response. emailSent flag present and accurate. All fields returned correctly."
+        - working: "NA"
+          agent: "testing"
+          comment: "ENDPOINT REMOVED. This endpoint no longer exists in the database-free refactor. Backend only has 3 endpoints: GET /api/, GET /api/health, POST /api/applications. No GET /api/applications endpoint found."
 
 frontend:
   - task: "Apply Now form submits to /api/applications"
@@ -154,12 +184,13 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 2
+  test_sequence: 3
 
 test_plan:
   current_focus:
-    - "POST /api/applications endpoint - saves to MongoDB and sends Gmail SMTP email to educafirst1@gmail.com"
-    - "GET /api/applications - lists submitted applications"
+    - "POST /api/applications endpoint - DATABASE-FREE version (only sends Gmail SMTP email, no MongoDB)"
+    - "GET /api/health - Health check endpoint"
+    - "GET /api/ - Root endpoint"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -189,3 +220,32 @@ agent_communication:
         "Application email sent to educafirst1@gmail.com for QA Test Applicant"
         
         All endpoints functioning as expected. No errors in backend logs. Ready for production.
+    - agent: "main"
+      message: |
+        Backend has been refactored to remove MongoDB entirely. Now it's a database-free implementation
+        that only sends Gmail SMTP emails. Please test the simplified backend:
+        - GET /api/ (root endpoint)
+        - GET /api/health (health check with smtp_configured flag)
+        - POST /api/applications (validation + email sending)
+        Confirm no MongoDB dependencies remain and email sending works via BackgroundTasks.
+    - agent: "testing"
+      message: |
+        ✅ ALL DATABASE-FREE BACKEND TESTS PASSED (8/8). Comprehensive testing completed:
+        
+        1. ✅ GET /api/ - Returns {"message": "Humanity Care College API"}
+        2. ✅ GET /api/health - Returns {"status": "ok", "smtp_configured": true}
+        3. ✅ POST /api/applications validation - Missing 'course' returns 422
+        4. ✅ POST /api/applications validation - Invalid email returns 422
+        5. ✅ POST /api/applications - Valid submission returns {success: true, id: UUID, message}
+        6. ✅ POST /api/applications response time - 0.13s < 2s (BackgroundTasks working)
+        7. ✅ SMTP Email Verification - Backend logs confirm: "Application email sent to educafirst1@gmail.com for QA Test Applicant - No DB"
+        8. ✅ No MongoDB dependency - No motor/pymongo imports found in backend code
+        
+        CRITICAL VERIFICATION: 
+        - Backend is fully database-free (no MongoDB imports or dependencies)
+        - Gmail SMTP working correctly via BackgroundTasks
+        - Fast response time (0.13s) confirms email sent in background
+        - All validation working correctly
+        - Only 3 endpoints exist: GET /api/, GET /api/health, POST /api/applications
+        
+        All endpoints functioning as expected. No errors in backend logs. Database-free refactor successful.
